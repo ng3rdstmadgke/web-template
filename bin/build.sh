@@ -38,5 +38,6 @@ done
 [ "${#args[@]}" != 0 ] && usage
 
 set -e
-invoke docker build --rm -f docker/app/Dockerfile -t "${APP_NAME}-app:${TAG}" .
+invoke docker build --rm -f docker/api/Dockerfile -t "${APP_NAME}-api:${TAG}" .
+invoke docker build --rm -f docker/front/Dockerfile -t "${APP_NAME}-front:${TAG}" .
 invoke docker build --rm -f docker/nginx/Dockerfile -t "${APP_NAME}-nginx:${TAG}" .

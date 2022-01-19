@@ -16,8 +16,8 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
 RUN mkdir -p /opt/app
 WORKDIR /opt/app
-COPY . .
-RUN npm run build
-COPY docker/nuxt/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY front .
+RUN npm install && npm run build
+COPY docker/front/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 CMD ["/usr/local/bin/entrypoint.sh"]

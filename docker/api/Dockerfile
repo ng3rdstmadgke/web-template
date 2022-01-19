@@ -26,13 +26,13 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 
 RUN mkdir -p /opt/app
 WORKDIR /opt/app
-COPY requirements.txt ./
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-COPY . .
+COPY api/requirements.txt ./
+RUN pip install --upgrade pip && \
+    pip install -r requirements.txt
+COPY api .
 
-COPY docker/app/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/api/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
-COPY docker/app/uvicorn.sh /usr/local/bin/uvicorn.sh
+COPY docker/api/uvicorn.sh /usr/local/bin/uvicorn.sh
 RUN chmod +x /usr/local/bin/uvicorn.sh
 CMD ["/usr/local/bin/entrypoint.sh"]

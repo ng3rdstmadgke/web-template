@@ -18,12 +18,13 @@ exit 1
 
 SCRIPT_DIR=$(cd $(dirname $0); pwd)
 PROJECT_ROOT=$(cd $(dirname $0)/..; pwd)
+API_DIR=$(cd ${PROJECT_ROOT}/api; pwd)
 APP_NAME=$(cat ${PROJECT_ROOT}/.app_name)
 
-cd "$PROJECT_ROOT"
+cd "$API_DIR"
 source "${SCRIPT_DIR}/lib/utils.sh"
 
-ENV_PATH="${PROJECT_ROOT}/.env"
+ENV_PATH="${API_DIR}/.env"
 args=()
 while [ "$#" != 0 ]; do
   case $1 in
