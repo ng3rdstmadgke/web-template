@@ -55,7 +55,7 @@ cat "$API_ENV_PATH" > "$api_env_tmp"
 front_env_tmp="$(mktemp)"
 cat "$FRONT_ENV_PATH" > "$front_env_tmp"
 
-trap "rm $api_env_tmp $front_env_tmp" EXIT
+trap "docker-compose -f docker-compose.yml down; rm $api_env_tmp $front_env_tmp" EXIT
 invoke export API_DIR="$API_DIR"
 invoke export FRONT_DIR="$FRONT_DIR"
 invoke export API_ENV_PATH="$api_env_tmp"

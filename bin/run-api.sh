@@ -47,4 +47,5 @@ trap "rm $tmpfile" EXIT
 set -e
 export $(cat ${tmpfile} | grep -v -e "^ *#")
 invoke uvicorn main:app \
+  --log-config "${API_DIR}/log_config.yml" \
   --reload

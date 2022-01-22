@@ -43,5 +43,5 @@ if [ "$MODE" = "prd" ]; then
   exec su app -c "printenv; uvicorn.sh"
 else
   echo "npm run dev"
-  exec su app -c "printenv; uvicorn main:app --reload"
+  exec su app -c "printenv; uvicorn main:app --log-config log_config.yml --reload"
 fi
