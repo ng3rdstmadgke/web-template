@@ -5,10 +5,10 @@ FROM nginx:1.21.5
 #ENV NO_PROXY 169.254.169.254
 
 RUN apt update && \
-    apt install -y iputils-ping net-tools
+    apt install -y locales
+#   apt install -y iputils-ping net-tools
 
-RUN apt install locales -y && \
-    echo 'ja_JP.UTF-8 UTF-8' >> /etc/locale.gen && \
+RUN echo 'ja_JP.UTF-8 UTF-8' >> /etc/locale.gen && \
     locale-gen && \
     update-locale LANG=ja_JP.UTF-8
 

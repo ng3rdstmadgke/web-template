@@ -34,8 +34,11 @@ export default function ({$axios, $cookies, redirect, error }: Context) {
         response_data: e.response?.data,
       }
       console.error(log)
+    } else {
+      console.error(e)
     }
     // status code が取得できなかったりサーバー側のエラーの場合はエラーページに飛ばす
+    /*
     if (!e.response || (e.response?.status ?? 0) >= 500) {
       console.error(e.toJSON())
       // https://nuxtjs.org/docs/internals-glossary/context/#redirect
@@ -45,12 +48,15 @@ export default function ({$axios, $cookies, redirect, error }: Context) {
         message: "Internal Server Error",
       })
     }
+    */
   })
 
   // リクエスト時の共通処理を定義
   // cookieにアクセストークンがあればAuthorizationヘッダを付与する
   $axios.onRequest((config: AxiosRequestConfig) => {
     // console.log(config)
+    // ブラウザ側とサーバー側でAPIアクセス先のbaseURLを分ける
+    config.baseURL = process.browser ? '' : process.env.API_HOST;
     if (Auth.authenticated($cookies)) {
       let token = Auth.getAccessToken($cookies)
       config.headers.common['Authorization'] = `Bearer ${token}`;
