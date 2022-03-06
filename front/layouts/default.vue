@@ -136,6 +136,13 @@ export default Vue.extend({
           requireRole: null,
         },
         {
+          icon: 'mdi-file-multiple',
+          title: 'Items',
+          to: '/items/',
+          display: "loggedIn",
+          requireRole: null,
+        },
+        {
           icon: 'mdi-account',
           title: 'Users',
           to: '/users/',
@@ -150,7 +157,7 @@ export default Vue.extend({
         if (authenticated && item.display == "notLoggedIn") {
           continue;
         }
-        if (!authenticated && item.requireAuth == "loggedIn") {
+        if (!authenticated && item.display == "loggedIn") {
           continue;
         }
         if (!item.requireRole) {

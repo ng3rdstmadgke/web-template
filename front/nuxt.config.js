@@ -27,6 +27,7 @@ export default {
   // レンダリング前に読み込みたいプラグインを定義
   plugins: [
     '@/plugins/axios.ts',
+    '@/plugins/settings.ts',
     //'@/plugins/auth.ts',
   ],
 

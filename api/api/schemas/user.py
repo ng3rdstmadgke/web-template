@@ -23,7 +23,7 @@ class UserSchema(UserSchemaBase):
     is_active: bool
     roles: List[RoleSchema] = []
     # NOTE: 重くなるし使わないのでひとまず出力しない
-    #terminology_files: List[ItemSchema]
+    #items: List[ItemSchema]
     
     class Config:
         orm_mode = True

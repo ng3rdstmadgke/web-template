@@ -45,6 +45,37 @@ export class Util {
     } else {
       return `An error occurred: ${e.message}`
     }
+  }
+  /**
+   * ArrayBufferとしてファイルを読み込む
+   * 
+   * FileReader: https://ja.javascript.info/file#ref-406
+   * mdn FileReader: https://developer.mozilla.org/ja/docs/Web/API/FileReader
+   */
+  public static readFileAsync(file: File): Promise<ArrayBuffer> {
+    return new Promise((resolve, reject) => {
+      let reader = new FileReader();
+      reader.onload = () => {resolve(reader.result as ArrayBuffer)}
+      reader.onerror = reject
+      reader.readAsArrayBuffer(file)
+    })
+  }
+
+  /**
+   * 指定された文字列をファイルとしてダウンロードする
+   * @param content ファイルの中身となる文字列
+   * @param filename ファイル名
+   * @param contentType コンテンツタイプ。text/plainなど
+   */
+  public static download(content: string, filename: string, contentType: string): void {
+    const blob = new Blob([content], { type: contentType });
+    const url = (window.URL || window.webkitURL).createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 
   }
 }
