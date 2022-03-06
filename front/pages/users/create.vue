@@ -64,7 +64,7 @@ export default Vue.extend({
           username: this.username,
           password: this.password
         }
-        this.$axios.post("//127.0.0.1:8000/api/v1/users/", data)
+        this.$axios.post("/api/v1/users/", data)
           .then(res => {
             this.$router.push({path: "/users"})
           })

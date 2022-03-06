@@ -1,6 +1,16 @@
 <template>
 <div>
   <Alert ref="alert" alertType="error" :message="$data.alertMessage"></Alert>
+  <div class="mt-3 mb-3">
+    <v-row>
+      <v-col cols="4" sm="2" >
+        <v-btn block color="warning" v-bind:to="`/users/${$route.params.userId}/edit`">Edit</v-btn>
+      </v-col>
+      <v-col cols="4" sm="2" >
+        <v-btn block color="error" v-on:click="openDeleteConfirmDialog()">Delete</v-btn>
+      </v-col>
+    </v-row>
+  </div>
   <v-simple-table>
     <template v-slot:default>
       <thead>
@@ -26,22 +36,13 @@
           <td>is_superuser</td>
           <td>{{ $data.user.is_superuser }}</td>
         </tr>
+        <tr>
+          <td>roles</td>
+          <td>{{ $data.user.roles.map((e) => e.name).join(", ") }}</td>
+        </tr>
       </tbody>
     </template>
   </v-simple-table>
-  <div class="mt-3">
-    <v-container>
-      <v-row>
-        <v-col>
-          <v-btn block v-bind:to="`/users/${$route.params.userId}/edit`">Edit</v-btn>
-        </v-col>
-        <v-col>
-          <v-btn block color="error" v-on:click="openDeleteConfirmDialog()">Delete</v-btn>
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
-
   <!--
     ConfirmDialogコンポーネントの呼び出し
     - ref="..."
@@ -91,7 +92,7 @@ export default Vue.extend({
       (this.$refs.confirm as any).open()
     },
     async confirmDeletion() {
-      this.$axios.delete(`http://127.0.0.1:8000/api/v1/users/${this.$route.params.userId}`)
+      this.$axios.delete(`/api/v1/users/${this.$route.params.userId}`)
         .then(_res => {
           this.$router.push({path: "/users"})
         })
@@ -102,12 +103,11 @@ export default Vue.extend({
     }
   },
 
-  // サーバーサイドの処理
   async asyncData(context) {
     // contestのメンバ: https://nuxtjs.org/docs/internals-glossary/context/
     //                  https://develop365.gitlab.io/nuxtjs-2.8.X-doc/ja/api/context/
     //   contextからaxiosを利用する場合は context.$axios.get(...)
-    return context.$axios.get(`http://127.0.0.1:8000/api/v1/users/${context.params.userId}`)
+    return context.$axios.get(`/api/v1/users/${context.params.userId}`)
       .then(res => {
         return {user: res.data}
       })

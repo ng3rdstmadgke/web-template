@@ -6,7 +6,7 @@ from fastapi import Depends, APIRouter, HTTPException
 from api import auth
 from api.db import db
 from api.models.user import User
-from api.schemas.user import UserSchema, UserCreateSchema
+from api.schemas.user import UserSchema, UserCreateSchema, UserUpdateSchema
 from api.cruds import (
     user as crud_user,
     role as crud_role,
@@ -16,15 +16,6 @@ router = APIRouter()
 
 @router.get("/users/me", response_model=UserSchema)
 def read_me(current_user: User = Depends(auth.get_current_active_user)):
-    return current_user
-
-@router.put("/users/me", response_model=UserSchema)
-def update_me(
-    user_schema: UserCreateSchema,
-    db: Session = Depends(db.get_db),
-    current_user: User = Depends(auth.get_current_active_user)
-):
-    crud_user.update_user(db, user_schema, current_user)
     return current_user
 
 # Depends(Callable[..., Any]) は引数に取った関数を実行してその実行結果を返す。
@@ -61,10 +52,22 @@ def read_user(
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
+#@router.put("/users/{user_id}/password", response_model=UserSchema)
+#def update_user_password(
+#    user_id: int,
+#    user_schema: UserCreateSchema,
+#    db: Session = Depends(db.get_db),
+#    _: User = Depends(auth.get_current_admin_user)
+#):
+#    user = crud_user.get_user(db, user_id=user_id)
+#    if user is None:
+#        raise HTTPException(status_code=404, detail="User not found")
+#    return crud_user.update_user_password(db, user_schema, user)
+
 @router.put("/users/{user_id}", response_model=UserSchema)
 def update_user(
     user_id: int,
-    user_schema: UserCreateSchema,
+    user_schema: UserUpdateSchema,
     db: Session = Depends(db.get_db),
     _: User = Depends(auth.get_current_admin_user)
 ):

@@ -1,12 +1,21 @@
 <template>
 <div>
+  <div class="mt-3 mb-3">
+    <v-row>
+      <v-col cols="12" sm="2">
+        <v-btn block color="success" to="/users/create">new</v-btn>
+      </v-col>
+    </v-row>
+  </div>
   <v-simple-table>
     <template v-slot:default>
       <thead>
         <tr>
           <th class="text-left">Id</th>
           <th class="text-left">Name</th>
-          <th class="text-left">更新</th>
+          <th class="text-left">IsActive</th>
+          <th class="text-left">IsSuperuser</th>
+          <th class="text-left"></th>
         </tr>
       </thead>
       <tbody>
@@ -17,24 +26,18 @@
             https://jp.vuejs.org/v2/guide/syntax.html#%E5%B1%9E%E6%80%A7
           -->
           <td><nuxt-link v-bind:to="`/users/${user.id}`">{{ user.username }}</nuxt-link></td>
-          <td><v-btn v-bind:to="`/users/${user.id}/edit`">edit</v-btn></td>
+          <td>{{ user.is_active }}</td>
+          <td>{{ user.is_superuser }}</td>
+          <td><v-btn color="warning" v-bind:to="`/users/${user.id}/edit`">edit</v-btn></td>
         </tr>
       </tbody>
     </template>
   </v-simple-table>
-  <div class="mt-3">
-    <v-container>
-      <v-row>
-        <v-col>
-          <v-btn block color="primary" to="/users/create">Create</v-btn>
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
 </div>
 </template>
 
 <script lang="ts">
+import Vue from 'vue'
 import {Util} from '@/plugins/common'
 import {Context} from '@nuxt/types'
 import { AxiosError, AxiosResponse } from 'axios'
@@ -56,7 +59,7 @@ interface UsersData {
  * プロパティ一覧
  * https://nuxtjs.org/docs/directory-structure/pages/#properties
  */
-export default {
+export default Vue.extend({
   middleware: ['auth'],  // middleware/auth.tsで未認証時にログインページにリダイレクトします
 
   data(): UsersData {
@@ -75,7 +78,7 @@ export default {
    */
   async asyncData(context: Context) {
     // plugins/axios.tsによって、tokenが存在する場合は Authorization ヘッダを付与してリクエストします。
-    return context.$axios.get("http://127.0.0.1:8000/api/v1/users/")
+    return context.$axios.get("/api/v1/users/")
       .then((res: AxiosResponse)=> {
         return {users: res.data}
       })
@@ -83,5 +86,5 @@ export default {
         Util.redirectErrorPage(context, e)
       })
   },
-}
+})
 </script>
