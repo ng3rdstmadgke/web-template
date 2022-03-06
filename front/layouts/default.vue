@@ -7,7 +7,7 @@
     >
       <v-list>
         <v-list-item
-          v-for="(item, i) in items"
+          v-for="(item, i) in getNavigationItems($store.state.authenticated)"
           :key="i"
           :to="item.to"
           router
@@ -27,7 +27,7 @@
       app
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title v-text="title" />
+      <v-toolbar-title  @click="$router.push('/')" style="cursor:pointer" v-text="title" />
       <v-spacer />
       <v-btn text to="/logout" v-if="$store.state.authenticated">
         <v-icon>mdi-logout</v-icon>
@@ -37,9 +37,27 @@
         <v-icon>mdi-login</v-icon>
         login
       </v-btn>
+      <div class="ml-2" v-if="$store.state.authenticated">
+        <v-icon>mdi-account</v-icon>
+        {{getUsername()}}
+      </div>
     </v-app-bar>
     <v-main>
       <v-container>
+        <div>
+          <v-breadcrumbs :items="getBreadcrumbsItems()" v-if="$store.state.authenticated">
+            <template v-slot:item="{ item }">
+              <v-breadcrumbs-item
+                link
+                nuxt
+                exact-active-class="v-breadcrumbs__item--disabled"
+                active-class=""
+                :to="item.href"
+                :disabled="item.disabled"
+              >{{ item.text }}</v-breadcrumbs-item>
+            </template>
+          </v-breadcrumbs>
+        </div>
         <Nuxt />
       </v-container>
     </v-main>
@@ -66,20 +84,86 @@ export default Vue.extend({
     return {
       drawer: false,
       fixed: false,
-      items: [
+      title: 'TransApp',
+    }
+  },
+
+  methods: {
+    getUsername(): string {
+      return Auth.getUsername(this.$cookies) ?? "Unknown";
+    },
+    getBreadcrumbsItems(): any[] {
+      let items = [
+        {
+          text: 'top',
+          disabled: false,
+          href: '/',
+        },
+      ];
+
+      let path: string[] = [];
+      this.$route.fullPath
+        .split("/")
+        .filter((e: string) => e.length > 0)
+        .forEach((e: string) => {
+          path.push(`/${e}`);
+          items.push(
+            {
+              text: e,
+              disabled: false,
+              href: path.join(""),
+            }
+          )
+        });
+      
+      return items
+
+    },
+    getNavigationItems(authenticated: boolean): any[] {
+      let items = [
+        {
+          icon: 'mdi-login',
+          title: 'Login',
+          to: '/login',
+          display: "notLoggedIn",
+          requireRole: null,
+        },
         {
           icon: 'mdi-home',
           title: 'Home',
-          to: '/'
+          to: '/',
+          display: "always",
+          requireRole: null,
         },
         {
           icon: 'mdi-account',
           title: 'Users',
-          to: '/users/'
+          to: '/users/',
+          display: "loggedIn",
+          requireRole: "TransAppAdminRole",
+        },
+      ];
+
+      let ret = [];
+
+      for (let item of items) {
+        if (authenticated && item.display == "notLoggedIn") {
+          continue;
         }
-      ],
-      title: 'QuickStart',
-    }
-  },
+        if (!authenticated && item.requireAuth == "loggedIn") {
+          continue;
+        }
+        if (!item.requireRole) {
+          ret.push(item);
+          continue;
+        }
+        if (item.requireRole && Auth.hasRole(this.$cookies, item.requireRole)) {
+          ret.push(item);
+          continue;
+        }
+      }
+      return ret;
+    },
+  }
 })
 </script>

@@ -60,7 +60,7 @@ export default class Auth {
   }
 
   // Cookieに保存されているTokenのJWTのheaderをオブジェクト形式で取得する
-  public static getHeader(cookie: NuxtCookies): {[index: string]: string} | null {
+  public static getHeader(cookie: NuxtCookies): {[index: string]: any} | null {
     let token = this.getAccessToken(cookie)
     if (!token) return null
     let header = token.split(".")[0]
@@ -69,11 +69,32 @@ export default class Auth {
   }
 
   // Cookieに保存されているTokenのJWTのpayloadをオブジェクト形式で取得する
-  public static getPayload(cookie: NuxtCookies): {[index: string]: string} | null {
+  public static getPayload(cookie: NuxtCookies): {[index: string]: any} | null {
     let token = this.getAccessToken(cookie)
     if (!token) return null
     let payload = token.split(".")[1]
     let decoded = Buffer.from(payload, "base64").toString()
     return JSON.parse(decoded)
+  }
+
+  public static isSuperuser(cookie: NuxtCookies): boolean {
+    let payload = Auth.getPayload(cookie);
+    let is_superuser = (payload) ? !!payload.is_superuser : false
+    return is_superuser
+  }
+
+  public static hasRole(cookie: NuxtCookies, role: string): boolean {
+    if (Auth.isSuperuser(cookie)) {
+      // 管理者は無条件ですべての権限を持つ
+      return true
+    }
+    let payload = Auth.getPayload(cookie);
+    let roles: string[] = (payload && !!payload.scopes) ? payload.scopes : []
+    return roles.indexOf(role) >= 0
+  }
+
+  public static getUsername(cookie: NuxtCookies): string | null {
+    let payload = Auth.getPayload(cookie);
+    return (payload && !!payload.sub) ? payload.sub : null
   }
 }

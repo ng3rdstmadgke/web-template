@@ -24,7 +24,7 @@
       required
       type="password"
     ></v-text-field>
-    <v-btn class="mr-4" @click="submit">submit</v-btn>
+    <v-btn color="primary" class="mr-4" @click="submit">login</v-btn>
     <v-btn @click="clear">clear</v-btn>
   </v-form>
 </div>
@@ -35,6 +35,7 @@ import Vue from 'vue';
 import Alert from '@/components/Alert.vue'
 import {Util} from '@/plugins/common'
 import Auth from '@/plugins/auth'
+import { Middleware, Context } from "@nuxt/types"
 
 interface LoginData {
   valid: boolean
@@ -46,6 +47,12 @@ interface LoginData {
 }
 
 export default Vue.extend({
+  middleware(context: Context) {
+    if (Auth.authenticated(context.$cookies)) {
+      return context.redirect('/');
+    }
+  },
+
   components: {
     Alert: Alert
   },
@@ -72,12 +79,12 @@ export default Vue.extend({
         let form = new FormData()
         form.append("username", this.$data.username)
         form.append("password", this.$data.password)
-        this.$axios.post("//127.0.0.1:8000/api/v1/token", form)
+        this.$axios.post("/api/v1/token", form)
           .then(res => {
             let token = res.data.access_token
             Auth.login(this.$cookies, token)
             // ひとつ前のページに戻る: https://router.vuejs.org/guide/essentials/navigation.html
-            this.$router.back()
+            this.$router.push("/")
           })
           .catch(e => {
             this.$data.alertMessage = Util.getAlertMessage(e);

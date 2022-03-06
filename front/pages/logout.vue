@@ -8,7 +8,7 @@ import Auth from "@/plugins/auth"
 export default Vue.extend({
   async middleware ({redirect, $cookies }) {
     Auth.logout($cookies);
-    redirect("/");
+    redirect("/login");
   },
 })
 </script>
