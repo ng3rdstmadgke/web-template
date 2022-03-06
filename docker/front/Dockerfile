@@ -1,8 +1,13 @@
 FROM node:16-bullseye-slim
 
-# ENV http_proxy http://xxxxxxx.jp:7080
-# ENV https_proxy http://xxxxxxx.jp:7080
-# ENV NO_PROXY 169.254.169.254,169.254.170.2
+ARG proxy
+ARG no_proxy
+
+ENV http_proxy=$proxy
+ENV https_proxy=$proxy
+ENV NO_PROXY=$no_proxy
+
+RUN printenv
 
 RUN apt update && \
     apt install -y locales
