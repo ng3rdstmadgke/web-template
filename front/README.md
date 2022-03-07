@@ -1,4 +1,4 @@
-# nuxt-quickstart-ts
+# web-template
 
 ## Build Setup
 
