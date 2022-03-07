@@ -2,18 +2,27 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.routers import item, token, user, role
+from api.env import get_env
 
-app = FastAPI(
-    redoc_url=None, # 本番環境では表示させない
-    docs_url="/api/docs", # 本番環境では表示させない
-    openapi_url="/api/docs/openapi.json" # 本番環境では表示させない
-)
-
-origins = [
-    "http://localhost",
-    "http://localhost:3000",
-    "http://localhost:8080"
-]
+if get_env().mode == "prd":
+    app = FastAPI(
+        redoc_url=None,
+        docs_url=None,
+        openapi_url=None,
+    )
+    origins = [
+        "http://localhost",
+        "http://localhost:3000",
+        "http://localhost:8080"
+    ]
+else:
+    # NOTE: dev環境ではAPI documentを表示
+    app = FastAPI(
+        redoc_url=None,
+        docs_url="/api/docs",
+        openapi_url="/api/docs/openapi.json"
+    )
+    origins = ["*"]
 
 # CORS: https://fastapi.tiangolo.com/tutorial/cors/
 app.add_middleware(
