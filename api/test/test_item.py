@@ -1,13 +1,8 @@
-from typing import Dict, Any
-from xmlrpc.client import boolean
 from fastapi.testclient import TestClient
 import pytest
 
 from api.db.base import Base
 from api.db.db import engine, SessionLocal
-from api.cruds import (
-    item as curd_item,
-)
 from test.lib import utils as test_utils
 
 from main import app
@@ -135,7 +130,7 @@ def test_update_success():
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 200
-    actual = test_utils.get_item_by_id(client, id)
+    actual = test_utils.http_get(client, f"/api/v1/items/{id}")
     expected ={
         "id": id,
         "name": "test",

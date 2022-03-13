@@ -29,7 +29,8 @@ def create_user(
     session_factory,
     username: str = "admin",
     password: str = "admin1234",
-    roles: List[str] = ["ItemAdminRole"]
+    roles: List[str] = ["ItemAdminRole"],
+    is_superuser: bool = False,
 ):
     with session_factory() as session:
         user = crud_user.create_user_if_not_exists(
@@ -42,15 +43,31 @@ def create_user(
                 RoleCreateSchema(name=role)
             )
             user.roles.append(role)
+        user.is_superuser = is_superuser
         session.add(user)
         session.commit()
 
-def get_item_by_id(client, id: int) -> List[Dict[str, Any]]:
+def http_get(client, url: str) -> List[Dict[str, Any]]:
     token = get_token(client)
     response = client.get(
-        f"/api/v1/items/{id}",
+        url,
         headers={"Authorization": f"Bearer {token}"},
     )
     if response.status_code != 200:
         raise Exception(f"{response.status_code}: {response.content}")
     return response.json()
+
+def create_role(client, name: str, desc: str = "") -> Dict[str, Any]:
+    token = get_token(client)
+    response = client.post(
+        f"/api/v1/roles/",
+        json={
+            "name": name,
+            "description": desc
+        },
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    if response.status_code != 200:
+        raise Exception(f"{response.status_code}: {response.content}")
+    return response.json()
+    
