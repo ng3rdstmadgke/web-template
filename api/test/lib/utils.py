@@ -44,3 +44,13 @@ def create_user(
             user.roles.append(role)
         session.add(user)
         session.commit()
+
+def get_item_by_id(client, id: int) -> List[Dict[str, Any]]:
+    token = get_token(client)
+    response = client.get(
+        f"/api/v1/items/{id}",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    if response.status_code != 200:
+        raise Exception(f"{response.status_code}: {response.content}")
+    return response.json()
