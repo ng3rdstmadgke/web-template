@@ -24,105 +24,58 @@ def pre_module():
 def test_create_success():
     token = test_utils.get_token(client)
     response = client.post(
-        "/api/v1/users/",
+        "/api/v1/roles/",
         json={
-            "username": "test_1",
-            "password": "test1234",
+            "name": "TestRole",
+            "description": "test",
         },
         headers={"Authorization": f"Bearer {token}"},
     )
+
     assert response.status_code == 200
-    body = response.json()
+
     expected = {
         'id': 2,
-        'username': "test_1",
-        'is_superuser': False,
-        'is_active': True,
-        'roles': [],
+        'name': "TestRole",
+        'description': "test",
     }
-    assert body == expected
-
-def test_create_success_asocRole():
-    user_id = 2
-    role_id = 1
-
-    token = test_utils.get_token(client)
-    response = client.post(
-        f"/api/v1/users/{user_id}/roles/{role_id}",
-        headers={"Authorization": f"Bearer {token}"},
-    )
-    assert response.status_code == 200
-    body = response.json()
-    expected = {
-        'id': 2,
-        'username': "test_1",
-        'is_superuser': False,
-        'is_active': True,
-        'roles': [
-            {"id": role_id, "name": "ItemAdminRole", "description": None}
-        ],
-    }
-    assert body == expected
-
+    assert response.json() == expected
 
 def test_create_error_alreadyExists():
     token = test_utils.get_token(client)
     response = client.post(
-        "/api/v1/users/",
+        "/api/v1/roles/",
         json={
-            "username": "test_1",
-            "password": "test1234",
+            "name": "TestRole",
         },
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 400
-    assert response.json() == {"detail": "Username already registerd"}
+    assert response.json() == {"detail": "Role already registerd"}
 
 
 def test_read_success_getAll():
     token = test_utils.get_token(client)
     response = client.get(
-        "/api/v1/users/",
+        "/api/v1/roles/",
         json={"skip": 0, "limit": 10},
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 200
     assert len(response.json()) == 2
 
-def test_read_success_me():
-    token = test_utils.get_token(client)
-    response = client.get(
-        f"/api/v1/users/me",
-        headers={"Authorization": f"Bearer {token}"},
-    )
-    assert response.status_code == 200
-    expected = {
-        'id': 1,
-        'username': "admin",
-        'is_superuser': True,
-        'is_active': True,
-        'roles': [
-            {"id": 1, "name": "ItemAdminRole", "description": None}
-        ],
-    }
-    assert response.json() == expected
-
 def test_read_success_getById():
     id = 2
     token = test_utils.get_token(client)
     response = client.get(
-        f"/api/v1/users/{id}",
+        f"/api/v1/roles/{id}",
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 200
     expected = {
         'id': id,
-        'username': "test_1",
-        'is_superuser': False,
-        'is_active': True,
-        'roles': [
-            {"id": 1, "name": "ItemAdminRole", "description": None}
-        ],
+        'name': "TestRole",
+        'description': "test",
     }
     assert response.json() == expected
 
@@ -130,7 +83,7 @@ def test_read_error_notFound():
     id = 10000
     token = test_utils.get_token(client)
     response = client.get(
-        f"/api/v1/users/{id}",
+        f"/api/v1/roles/{id}",
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 404
@@ -139,37 +92,32 @@ def test_update_success():
     id = 2
     token = test_utils.get_token(client)
     response = client.put(
-        f"/api/v1/users/{id}",
+        f"/api/v1/roles/{id}",
         json={
-            'username': 'test_1',
-            'is_superuser': True,
-            'is_active': False,
+            "name": "TestUpdatedRole",
+            "description": "test updated",
         },
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 200
+
     expected ={
-        'id': id,
-        'username': "test_1",
-        'is_superuser': True,
-        'is_active': False,
-        'roles': [
-            {"id": 1, "name": "ItemAdminRole", "description": None}
-        ],
+        "id": id,
+        "name": "TestUpdatedRole",
+        "description": "test updated",
     }
     assert response.json() == expected
-    actual = test_utils.http_get(client, f"/api/v1/users/{id}")
+    actual = test_utils.http_get(client, f"/api/v1/roles/{id}")
     assert actual == expected
 
 def test_update_error_notFound():
     id = 10000
     token = test_utils.get_token(client)
     response = client.put(
-        f"/api/v1/users/{id}",
+        f"/api/v1/roles/{id}",
         json={
-            'username': 'test_1',
-            'is_superuser': True,
-            'is_active': False,
+            "name": "TestUpdatedRole",
+            "description": "test updated",
         },
         headers={"Authorization": f"Bearer {token}"},
     )
@@ -179,17 +127,17 @@ def test_delete_success():
     id = 2
     token = test_utils.get_token(client)
     response = client.delete(
-        f"/api/v1/users/{id}",
+        f"/api/v1/roles/{id}",
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 200
-    assert response.json() == {"user_id": id}
+    assert response.json() == {"role_id": id}
 
 def test_delete_error_notFound():
     id = 10000
     token = test_utils.get_token(client)
     response = client.delete(
-        f"/api/v1/users/10000",
+        f"/api/v1/roles/10000",
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 404

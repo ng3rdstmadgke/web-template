@@ -130,7 +130,6 @@ def test_update_success():
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 200
-    actual = test_utils.http_get(client, f"/api/v1/items/{id}")
     expected ={
         "id": id,
         "name": "test",
@@ -139,6 +138,8 @@ def test_update_success():
         "content": 'en\tja\nkonbanha\tこんばんは',
         "owner": True
     }
+    assert response.json() == expected
+    actual = test_utils.http_get(client, f"/api/v1/items/{id}")
     assert actual == expected
 
 def test_update_error_notFound():
