@@ -1,4 +1,4 @@
-APP_NAME=fastapi-sample
+APP_NAMEweb-template=
 STAGE_NAME=lo1
 MODE=dev
 AWS_REGION=ap-northeast-1

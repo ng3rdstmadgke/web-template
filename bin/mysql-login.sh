@@ -56,4 +56,4 @@ docker run --rm -ti \
   --env-file "$env_tmp" \
   -v "${API_DIR}:/opt/app" \
   "${APP_NAME}/tool:${TAG}" \
-  /opt/app/bin/mysql_login.sh
+  /opt/bin/lib/mysql_login.sh
